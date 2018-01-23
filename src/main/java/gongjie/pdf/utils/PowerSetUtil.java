@@ -1,7 +1,7 @@
 public class PowerSetUtil {
     /**
-     * @param originalList 求真子集
-     * @param allList
+     * @param originalList 原集合
+     * @param allList      所有的子集
      * @return
      */
     static List<List<Integer>> getSubsets(List<Integer> originalList,List<List<Integer>> allList) {
