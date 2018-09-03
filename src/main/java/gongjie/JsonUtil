@@ -1,0 +1,61 @@
+package cn.caijiajia.validator.util;
+
+import cn.caijiajia.framework.exceptions.CjjServerException;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author j_gong
+ * @date 2018/8/24 下午5:15
+ */
+public class JsonUtil {
+   
+  /**
+     * 获取json所对应的value值
+     * @param key
+     * @param jsonData
+     * @return
+     * 
+     */
+    public static Object getValueByNest(String key,Object jsonData){
+        try {
+            //key :  applybo.lawinfos.idBo.id   
+             //jsonData:  {"idBo":{"id":123312123},"id":213231123,"uid":"asdasd","lawinfos":[{"idBo":{"id":123312123}},{"idBo":{"id":2222}}],"idBo":{"id":231123123},"sex":"女","idNo":"321088199411137116"}
+            //return     [{"idBo":{"id":123312123}},{"idBo":{"id":2222}}]
+            String[] split = key.split("\\.");
+            int size = split.length;
+            if(size==1){
+                if(jsonData instanceof JSONObject){
+                    return ((JSONObject)jsonData).get(key);
+                }else{
+                    List<Object> objects = new ArrayList<>();
+                    for (Object o : ((JSONArray) jsonData)) {
+                        objects.add(((JSONObject)o).get(key));
+                    }
+                    return objects;
+                }
+            }else{
+                if(jsonData instanceof JSONObject){
+                    return getValueByNest(key.substring(key.indexOf(".")+1),((JSONObject)jsonData).get(split[0]));
+                }else{
+                    List<Object> objects = new ArrayList<>();
+                    for(Object o : (JSONArray) jsonData){
+                        objects.add(getValueByNest(key.substring(key.indexOf(".") + 1), ((JSONObject) o).get(split[0])));
+                    }
+                    return objects;
+                }
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+}
